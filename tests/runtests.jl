@@ -1,10 +1,6 @@
 import Named
 
-using Test
-
-@test Named.Array(randn(2, 2), (:batch, :height)) isa Named.Matrix
-
-@test Named.Array(randn(2), (:batch,)) isa Named.Vector
+using Test, CuArrays, Flux
 
 ims = rand(6, 96, 96, 3)
 
@@ -37,3 +33,14 @@ permutedims(x, (:square_footage, :bedrooms, :bathrooms))
 permutedims(x, (1, 2, 3))
 
 ones((a = 3, b = 5)) * ones(5, 4)
+
+model = Chain(
+    Dense(10, 5, σ),
+    Dense(5, 3))
+
+input = randn((feature_vector=10,))
+
+model(input)
+
+
+cu_input = Named.Array(cu(randn(10)), (:feature_vector,))
