@@ -6,7 +6,8 @@ import CuArrays: cu
 
 import Base: size, getindex, setindex!, IndexStyle,
              randn, length, permutedims, iterate, eltype,
-             ones, zeros, trues, falses, fill, reshape
+             ones, zeros, trues, falses, fill, reshape, sort,
+             *, +
 
 struct Array{T, N, S, A <: AbstractArray{T, N}} <: AbstractArray{T, N}
     data::A
@@ -27,8 +28,11 @@ size(array::Array{T, N, S}; named=false) where {T, N, S} =
 
 size(array::Array{T, N, S}, n::Int) where {T, N, S} = size(array.data, n)
 
+symbol_index(::Array{T, N, S}, s::Symbol) where {T, N, S} =
+    indexin([s], collect(keys(S)))[1]
+
 size(array::Array{T, N, S}, n::Symbol) where {T, N, S} =
-    S[indexin([n], collect(keys(S)))[1]]
+    S[symbol_index(array, n)]
 
 getindex(array::Array, i::Int) = array.data[i]
 
@@ -66,6 +70,18 @@ end
 reshape(array::Array{T, N, S}, dims::NTuple{N, Int}) where {T, N, S} =
     Array(reshape(array.data, dims), keys(S))
 
+sort(array::Array{T, N, S}, dims::Symbol) where {T, N, S} =
+    Array(sort(array.data, dims=symbol_index(array, dims)), keys(S))
+
 cu(array::Array{T, N, S}) where {T, N, S} = Array(cu(array.data), keys(S))
+
+*(x::Number, array::Array{T, N, S}) where {T, N, S} =
+    Array(x * array.data, keys(S))
+
+*(array::Array{T, N, S}, x::Number) where {T, N, S} =
+    Array(array.data * x, keys(S))
+
++(a1::Array{T1, N, S}, a2::Array{T2, N, S}) where {T1, T2, N, S} =
+    Array(a1.data + a2.data, keys(S))
 
 end

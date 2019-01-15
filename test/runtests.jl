@@ -46,4 +46,22 @@ eachindex(x)
 
 @test size(reshape(x, 5, 3), named=true) == (a = 5, b = 3)
 
-cu(x)
+@test cu(x) isa Named.Array
+
+
+X = Named.Array(
+    [10 9 8
+     7 6 5
+     4 3 2],
+    (:a, :b))
+
+
+sort(X, dims=1)
+
+@test sort(X, :a) isa Named.Array
+
+@test 3 * X isa Named.Array
+
+@test X * 3 isa Named.Array
+
+@test X + X isa Named.Array
