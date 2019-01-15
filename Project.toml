@@ -2,3 +2,6 @@ name = "Named"
 uuid = "004a7a1e-1871-11e9-20c7-691d1179b2cb"
 authors = ["Adam Kowalski <adam.kowalski.work@gmail.com>"]
 version = "0.1.0"
+
+[deps]
+CuArrays = "3a865a2d-5b23-5a0f-bc46-62713ec82fae"

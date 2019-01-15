@@ -1,6 +1,6 @@
 import Named
 
-using Test, CuArrays, Flux
+using Test, CuArrays
 
 ims = rand(6, 96, 96, 3)
 
@@ -8,39 +8,42 @@ named_ims = Named.Array(ims, (:batch, :height, :width, :channels))
 
 @test size(named_ims) == (6, 96, 96, 3)
 
+@test size(named_ims, named=true) == (batch=6, height=96, width=96, channels=3)
+
 @test size(named_ims, 1) == 6
 
 @test size(named_ims, :width) == 96
 
 @test size(named_ims, :channels) == 3
 
+@test named_ims == ims
+
+@test named_ims !== ims
+
 ex = randn((height=96, width=96, channels=3))
 
-ex2 = randn(Float32, (height=96, width=96, channels=3))
+ex_permuted = permutedims(ex, (:height, :channels, :width))
 
-ex3 = permutedims(ex, (:height, :channels, :width))
+@test size(ex_permuted, named=true) == (height = 96, channels = 3, width = 96)
 
-3named_ims.^2
+ones((a = 3, b = 5))
 
-ex[1, 2, :]
+zeros((a = 3, b = 5))
 
-eltype(ex2)
+trues((a = 3, b = 5))
 
-x = randn((bedrooms = 3, bathrooms = 2, square_footage = 1000))
+falses((a = 3, b = 5))
 
-permutedims(x, (:square_footage, :bedrooms, :bathrooms))
+x = fill(100, (a = 3, b = 5))
 
-permutedims(x, (1, 2, 3))
+fill!(x, 1)
 
-ones((a = 3, b = 5)) * ones(5, 4)
+similar(x, 1, 2)
 
-model = Chain(
-    Dense(10, 5, σ),
-    Dense(5, 3))
+length(x)
 
-input = randn((feature_vector=10,))
+eachindex(x)
 
-model(input)
+@test size(reshape(x, 5, 3), named=true) == (a = 5, b = 3)
 
-
-cu_input = Named.Array(cu(randn(10)), (:feature_vector,))
+cu(x)
